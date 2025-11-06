@@ -1,0 +1,142 @@
+{
+	"info": {
+		"_postman_id": "c76b1fb2-adfc-46d7-8bd4-5ce3eb4e05e9",
+		"name": "resilience-observability",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10246997"
+	},
+	"item": [
+		{
+			"name": "User-Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"username\": \"Lab3\", \"email\": \"lab.dist@gmail.com\", \"password\": \"aadityaaa\" }"
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/users/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User-GET",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "CircuitBreaker-status",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "CircuitBreaker-health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:56331/health",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "56331",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Chaos-delay",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"enabled\": false,\r\n    \"delayMs\": \"0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:56331/chaos/delay",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "56331",
+					"path": [
+						"chaos",
+						"delay"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Chaos-Error",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"enabled\": \"true\",\r\n    \"errorRate\": 1.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:56331/chaos/error",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "56331",
+					"path": [
+						"chaos",
+						"error"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
