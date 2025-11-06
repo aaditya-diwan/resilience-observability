@@ -1,0 +1,96 @@
+{
+  "version": "1.0.0",
+  "title": "Backend Service Resilience Test",
+  "description": "Test the resilience of the user registration system when the backend service experiences failures",
+  "tags": [
+    "kubernetes",
+    "resilience",
+    "circuit-breaker"
+  ],
+  "configuration": {
+    "namespace": "user-registration"
+  },
+  "steady-state-hypothesis": {
+    "title": "System is healthy and responsive",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "backend-service-is-available",
+        "tolerance": 200,
+        "provider": {
+          "type": "http",
+          "url": "http://localhost:30000/health",
+          "timeout": 5
+        }
+      },
+      {
+        "type": "probe",
+        "name": "client-service-is-available",
+        "tolerance": 200,
+        "provider": {
+          "type": "http",
+          "url": "http://localhost:30001/health",
+          "timeout": 5
+        }
+      },
+      {
+        "type": "probe",
+        "name": "circuit-breaker-is-closed",
+        "tolerance": 200,
+        "provider": {
+          "type": "http",
+          "url": "http://localhost:30001/circuit-breaker/status",
+          "timeout": 5
+        }
+      }
+    ]
+  },
+  "method": [
+    {
+      "type": "action",
+      "name": "terminate-backend-pod",
+      "provider": {
+        "type": "python",
+        "module": "chaosk8s.pod.actions",
+        "func": "terminate_pods",
+        "arguments": {
+          "label_selector": "app=backend",
+          "ns": "user-registration",
+          "rand": true,
+          "qty": 1
+        }
+      },
+      "pauses": {
+        "after": 10
+      }
+    },
+    {
+      "type": "probe",
+      "name": "verify-circuit-breaker-opens",
+      "provider": {
+        "type": "http",
+        "url": "http://localhost:30001/circuit-breaker/status"
+      }
+    },
+    {
+      "type": "action",
+      "name": "wait-for-recovery",
+      "provider": {
+        "type": "process",
+        "path": "C:\\Windows\\System32\\timeout.exe",
+        "arguments": "/t 30 /nobreak"
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "type": "action",
+      "name": "reset-circuit-breaker",
+      "provider": {
+        "type": "http",
+        "url": "http://localhost:30001/circuit-breaker/reset",
+        "method": "POST"
+      }
+    }
+  ]
+}
